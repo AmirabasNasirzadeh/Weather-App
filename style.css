@@ -14,9 +14,12 @@
 /*************************/
 
 :root {
-  --font__color: #fff;
+  --font-color: #fff;
   --white: #fff;
+  --black: #000;
+  --gray: #ced4da;
   --blue-background: #74c0fc;
+  --dark-blue: #364fc7;
 }
 
 * {
@@ -33,6 +36,137 @@ body {
   font-family: "Rubik", sans-serif;
   line-height: 1;
   font-weight: 400;
-  color: var(--font__color);
+  color: var(--font-color);
   background-color: var(--blue-background);
+}
+
+.main {
+  max-width: 45rem;
+  margin: 0 auto;
+  padding: 3.2rem;
+}
+
+.grid--2 {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.grid--3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.grid--7 {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.flex--v {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  margin: 0 auto;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.line--v {
+  height: auto;
+  width: 2px;
+  background-color: var(--white);
+  margin: 0.5rem auto;
+}
+
+.line--h {
+  width: auto;
+  height: 2px;
+  background-color: var(--white);
+  margin: 2rem auto;
+}
+
+
+
+/*************************/
+/* Search Form */
+/*************************/
+
+.search {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 2rem 0;
+}
+
+.search__input {
+  padding: 1rem 2rem;
+  width: 85%;
+  border-radius: 99999rem;
+  border: none;
+  font-family: inherit;
+}
+
+.search__submit--image {
+  height: 2.4rem;
+  margin: 1rem;
+}
+
+
+.search__submit {
+  height: 4.8rem;
+  width: 4.8rem;
+  border-radius: 99999rem;
+  border: none;
+}
+
+.search__submit:hover {
+  background-color: var(--gray);
+}
+
+/*************************/
+/* Weather info */
+/*************************/
+
+.info {
+  padding: 1rem;
+}
+
+.degree {
+  font-size: 12.8rem;
+  display: block;
+  width: 15rem;
+}
+
+.degree--unit {
+  font-size: 3.6rem;
+  display: block;
+  transform: translate(15rem, -5rem);
+}
+
+.condition {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.condition__description {
+  font-size: 3.6rem;
+}
+
+.condition__image {
+  height: 8rem;
+  width: 8rem;
+  margin-right: 1rem;
+}
+
+/*************************/
+/* City info */
+/*************************/
+
+.city__name {
+  font-size: 3.6rem;
+}
+
+.city__time {
+  font-size: 3.6rem;
+  justify-self: end;
 }
