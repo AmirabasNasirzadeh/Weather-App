@@ -584,11 +584,33 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 }
 
 },{}],"4AFn4":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 var _webImmediateJs = require("core-js/modules/web.immediate.js");
 var _runtime = require("regenerator-runtime/runtime");
 var _helpers = require("./helpers");
+var _model = require("./model");
+var _view = require("./view");
+var _viewDefault = parcelHelpers.interopDefault(_view);
+var _regeneratorRuntime = require("regenerator-runtime");
+const controlData = async function() {
+    try {
+        const query = (0, _viewDefault.default).getQuery();
+        // 1) Render the spinner
+        (0, _viewDefault.default).spinner();
+        // 2) Search for city data
+        await _model.setCityData(query);
+        // 3) Render the city data
+        (0, _viewDefault.default).render(_model.state.data);
+    } catch (error) {
+        (0, _viewDefault.default).render(error.message);
+    }
+};
+const init = function() {
+    (0, _viewDefault.default).addHandlerSearch(controlData);
+};
+init();
 
-},{"core-js/modules/web.immediate.js":"49tUX","regenerator-runtime/runtime":"dXNgZ","./helpers":"aCbzS"}],"49tUX":[function(require,module,exports) {
+},{"core-js/modules/web.immediate.js":"49tUX","regenerator-runtime/runtime":"dXNgZ","./helpers":"aCbzS","./model":"17jVs","./view":"jnf1v","regenerator-runtime":"dXNgZ","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"49tUX":[function(require,module,exports) {
 "use strict";
 // TODO: Remove this module from `core-js@4` since it's split to modules listed below
 require("52e9b3eefbbce1ed");
@@ -2427,15 +2449,31 @@ try {
 },{}],"aCbzS":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "timeout", ()=>timeout);
 parcelHelpers.export(exports, "API_URL", ()=>API_URL);
 parcelHelpers.export(exports, "getJSON", ()=>getJSON);
+const timeout = function(s) {
+    return new Promise(function(_, reject) {
+        setTimeout(function() {
+            reject(new Error(`Request took too long! Timeout after ${s} second`));
+        }, s * 1000);
+    });
+};
 const API_URL = function(city, unit = `metric`) {
     return `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=2256f7cb4b0e36278cf1cf1d45be7d49&units=${unit}`;
 };
 const getJSON = async function(url) {
-    const response = await fetch(url);
-    const data = await response.json();
-    console.log(data);
+    try {
+        const fetchPro = fetch(url);
+        const response = await Promise.race([
+            fetchPro,
+            timeout(10)
+        ]);
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        throw error;
+    }
 };
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
@@ -2468,6 +2506,163 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}]},["gAjek","4AFn4"], "4AFn4", "parcelRequirebbde")
+},{}],"17jVs":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "state", ()=>state);
+parcelHelpers.export(exports, "setCityData", ()=>setCityData);
+var _regeneratorRuntime = require("regenerator-runtime");
+var _helpers = require("./helpers");
+const state = {
+    data: {}
+};
+const _createWeatherData = function(city) {
+    return {
+        cityName: city.name,
+        cityTime: _createTime(city.dt),
+        cityTemp: Math.round(city.main.temp),
+        weatherIcon: city.weather[0].icon,
+        weatherDescription: city.weather[0].main,
+        citySunrise: _createTime(city.sys.sunrise),
+        citySunset: _createTime(city.sys.sunset),
+        cityWind: `${Math.round(city.wind.speed)}Km`,
+        cityHumidity: `${city.main.humidity}%`
+    };
+};
+const _createTime = function(unixTime) {
+    const time = new Date(unixTime * 1000);
+    const hour = time.getHours() < 10 ? `0` + time.getHours() : time.getHours();
+    const minute = time.getMinutes() < 10 ? `0` + time.getMinutes() : time.getMinutes();
+    return `${hour}:${minute}`;
+};
+const setCityData = async function(cityName) {
+    try {
+        const cityData = await (0, _helpers.getJSON)((0, _helpers.API_URL)(cityName));
+        state.data = _createWeatherData(cityData);
+    } catch (error) {
+        throw error;
+    }
+};
+
+},{"regenerator-runtime":"dXNgZ","./helpers":"aCbzS","@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"jnf1v":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+class View {
+    _data;
+    _errorMessage = `Couldn't find any data! please try again ):`;
+    _parentEl = document.querySelector(`.parent`);
+    _form = document.querySelector(`.search`);
+    render(data) {
+        if (!data || Array.isArray(data) && data.length === 0 || data.cod && data.cod !== 200) return this.renderError();
+        this._data = data;
+        const html = this._generateHTML();
+        this._clear();
+        this._parentEl.insertAdjacentHTML(`beforeend`, html);
+    }
+    _clear() {
+        this._parentEl.innerHTML = ``;
+    }
+    spinner() {
+        const html = `<img src="loading.5b8b5f63.png" class="spinner">`;
+        this._clear();
+        this._parentEl.insertAdjacentHTML("beforeend", html);
+    }
+    renderError(message = this._errorMessage) {
+        const html = `<p class="parent__description">
+                    ${message}
+                  </p>`;
+        this._clear();
+        this._parentEl.insertAdjacentHTML("beforeend", html);
+    }
+    _generateHTML() {
+        return `<div class="info">
+                    <div class="grid--2">
+                      <div>
+                        <p class="degree">
+                          ${this._data.cityTemp}
+                        </p>
+                        <span class="degree--unit">c</span>
+                      </div>
+                      <div class="condition">
+                        <img src="https://openweathermap.org/img/wn/${this._data.weatherIcon}@2x.png" alt="Weather condition image" class="condition__image">
+                        <p class="condition__description">${this._data.weatherDescription}</p>
+                      </div>
+                    </div>
+
+                    <div class="grid--3">
+                      <p class="city__name">
+                        ${this._data.cityName}
+                      </p>
+                      <div class="line--v"></div>
+                      <p class="city__time">
+                        ${this._data.cityTime}
+                      </p>
+                    </div>
+
+                    <div class="line--h"></div>
+
+                    <div class="grid--7">
+                      <div class="flex--v">
+                        <p class="city__sunrise--description">
+                          Sunrise
+                        </p>
+                        <p class="city__sunrise--value">
+                          ${this._data.citySunrise}
+                        </p>
+                      </div>
+
+                      <div class="line--v"></div>
+
+                      <div class="flex--v">
+                        <p class="city__sunrise--description">
+                          Sunset
+                        </p>
+                        <p class="city__sunrise--value">
+                          ${this._data.citySunset}
+                        </p>
+                      </div>
+
+                      <div class="line--v"></div>
+
+                      <div class="flex--v">
+                        <p class="city__sunrise--description">
+                          Humidity
+                        </p>
+                        <p class="city__sunrise--value">
+                          ${this._data.cityHumidity}
+                        </p>
+                      </div>
+
+                      <div class="line--v"></div>
+
+                      <div class="flex--v">
+                        <p class="city__sunrise--description">
+                          Wind
+                        </p>
+                        <p class="city__sunrise--value">
+                          ${this._data.cityWind}
+                        </p>
+                      </div>
+                    </div>
+                  </div>`;
+    }
+    _clearInput() {
+        this._form.querySelector(`.search__input`).value = ``;
+    }
+    getQuery() {
+        const query = document.querySelector(`.search__input`).value;
+        this._clearInput();
+        return query;
+    }
+    addHandlerSearch(handler) {
+        this._form.addEventListener(`submit`, function(event) {
+            event.preventDefault();
+            handler();
+        });
+    }
+}
+exports.default = new View();
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["gAjek","4AFn4"], "4AFn4", "parcelRequirebbde")
 
 //# sourceMappingURL=index.9666d62a.js.map
