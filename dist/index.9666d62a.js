@@ -602,7 +602,7 @@ const controlData = async function() {
         // 3) Render the city data
         (0, _viewDefault.default).render(_model.state.data);
     } catch (error) {
-        (0, _viewDefault.default).render(error.message);
+        (0, _viewDefault.default).renderError(error.message);
     }
 };
 const init = function() {
@@ -2526,7 +2526,8 @@ const _createWeatherData = function(city) {
         citySunrise: _createTime(city.sys.sunrise),
         citySunset: _createTime(city.sys.sunset),
         cityWind: `${Math.round(city.wind.speed)}Km`,
-        cityHumidity: `${city.main.humidity}%`
+        cityHumidity: `${city.main.humidity}%`,
+        cod: city.cod
     };
 };
 const _createTime = function(unixTime) {
@@ -2553,7 +2554,7 @@ class View {
     _parentEl = document.querySelector(`.parent`);
     _form = document.querySelector(`.search`);
     render(data) {
-        if (!data || Array.isArray(data) && data.length === 0 || data.cod && data.cod !== 200) return this.renderError();
+        if (!data || !data instanceof Object || data.cod !== 200) return this.renderError();
         this._data = data;
         const html = this._generateHTML();
         this._clear();

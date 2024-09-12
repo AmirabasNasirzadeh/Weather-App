@@ -5,8 +5,7 @@ class View {
   _form = document.querySelector(`.search`);
 
   render(data) {
-    if (!data || (Array.isArray(data) && data.length === 0) || (data.cod && data.cod !== 200))
-      return this.renderError();
+    if (!data || !data instanceof Object || data.cod !== 200) return this.renderError();
 
     this._data = data;
     const html = this._generateHTML();

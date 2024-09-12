@@ -16,6 +16,7 @@ const _createWeatherData = function (city) {
     citySunset: _createTime(city.sys.sunset),
     cityWind: `${Math.round(city.wind.speed)}Km`,
     cityHumidity: `${city.main.humidity}%`,
+    cod: city.cod,
   };
 };
 

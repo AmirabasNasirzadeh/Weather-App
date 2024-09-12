@@ -18,7 +18,7 @@ const controlData = async function () {
     // 3) Render the city data
     view.render(model.state.data);
   } catch (error) {
-    view.render(error.message);
+    view.renderError(error.message);
   }
 };
 

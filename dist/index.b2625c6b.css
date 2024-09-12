@@ -73,6 +73,7 @@ body {
 
 .parent__description {
   text-align: center;
+  width: 35rem;
   font-size: 2rem;
   line-height: 1.3;
   display: block;
@@ -166,16 +167,4 @@ body {
   justify-self: end;
   font-size: 3.6rem;
 }
-
-@media (width <= 25em) {
-  html {
-    font-size: 50%;
-  }
-}
-
-@media (width <= 20em) {
-  html {
-    font-size: 43.75%;
-  }
-}
-/*# sourceMappingURL=index.3a01df49.css.map */
+/*# sourceMappingURL=index.b2625c6b.css.map */
