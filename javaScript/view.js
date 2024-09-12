@@ -1,3 +1,5 @@
+import { Date } from "core-js";
+
 class View {
   _data;
   _errorMessage = `Couldn't find any data! please try again ):`;
@@ -120,6 +122,12 @@ class View {
       event.preventDefault();
       handler();
     });
+  }
+
+  updateYear() {
+    const date = new Date();
+    const year = date.getFullYear();
+    document.querySelector(`.year`).textContent = year;
   }
 }
 

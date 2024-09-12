@@ -24,6 +24,7 @@ const controlData = async function () {
 
 const init = function () {
   view.addHandlerSearch(controlData);
+  view.updateYear();
 };
 
 init();
